@@ -77,11 +77,30 @@ const updateDress = async (req, res) => {
         res.status(400).json({ message: 'Yeniləmə xətası', error: err.message })
     }
 }
+const fs = require('fs')
+const path = require('path')
+
 const deleteDress = async (req, res) => {
     try {
-        const deletedDress = await Dress.findByIdAndDelete(req.params.id)
-        if (!deletedDress) return res.status(404).json({ message: 'Gəlinlik tapılmadı' })
-        res.json({ message: 'Gəlinlik silindi ✅' })
+        const dress = await Dress.findById(req.params.id)
+
+        if (!dress) return res.status(404).json({ message: 'Gəlinlik tapılmadı' })
+
+        // Fayl yolunu götür və sil
+        if (dress.image) {
+            const imagePath = path.join(__dirname, '..', dress.image)
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Şəkil silinərkən xəta:', err.message)
+                } else {
+                    console.log('Şəkil silindi:', imagePath)
+                }
+            })
+        }
+
+        await Dress.findByIdAndDelete(req.params.id)
+
+        res.json({ message: 'Gəlinlik və şəkli silindi ✅' })
     } catch (err) {
         res.status(400).json({ message: 'Silinmə xətası', error: err.message })
     }
