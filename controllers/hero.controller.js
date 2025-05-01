@@ -27,13 +27,14 @@ const getHero = async (req, res) => {
 
         let videoPath = hero.video || ''
 
-        // 🔥 Burada avtomatik `/videos/` düzəlt
+        // Yol düzəlişi: əgər `/uploads/` var, amma `/uploads/videos/` yoxdursa, düzəldək
         if (videoPath.startsWith('/uploads/') && !videoPath.startsWith('/uploads/videos/')) {
             const fileName = videoPath.split('/').pop()
             videoPath = '/uploads/videos/' + fileName
         }
 
-        const fullVideoUrl = videoPath ? req.protocol + '://' + req.get('host') + videoPath : ''
+        // HTTPS məcburi şəkildə əlavə olunur
+        const fullVideoUrl = videoPath ? 'https://' + req.get('host') + videoPath : ''
 
         res.json({
             video: fullVideoUrl,
