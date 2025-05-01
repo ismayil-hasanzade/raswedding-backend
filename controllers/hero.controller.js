@@ -53,19 +53,15 @@ const updateHero = async (req, res) => {
         if (!hero) {
             hero = new Hero()
         }
-
-        // Əgər yeni video yüklənirsə köhnəsini silək
         if (req.file && hero.video) {
             const oldVideoPath = path.join(__dirname, '..', hero.video)
             if (fs.existsSync(oldVideoPath)) {
                 fs.unlinkSync(oldVideoPath)
             }
         }
-
         if (req.file) {
-            hero.video = '/uploads/videos/' + req.file.filename  // 🔥 Burada düz yolu qeyd edirik
+            hero.video = '/uploads/videos/' + req.file.filename
         }
-
         hero.content1 = req.body.content1
         hero.content2 = req.body.content2
 

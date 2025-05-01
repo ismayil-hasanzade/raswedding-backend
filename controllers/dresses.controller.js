@@ -1,15 +1,12 @@
 const Dress = require('../models/dress.model')
-const buildFullUrl = (req, path) => {
-    if (!path) return ''
-    if (path.startsWith('http')) return path
-    return `${req.protocol}://${req.get('host')}${path}`
+const buildFullUrl = (req, relativePath) => {
+    if (!relativePath) return ''
+    return `${req.protocol}://${req.get('host')}${relativePath}`
 }
-
 const getAllDresses = async (req, res) => {
     try {
         const dresses = await Dress.find()
 
-        // 🔥 Hər gəlinlik üçün şəkil urlini tam qur
         const formattedDresses = dresses.map(dress => ({
             ...dress._doc,
             image: buildFullUrl(req, dress.image)
@@ -17,9 +14,11 @@ const getAllDresses = async (req, res) => {
 
         res.json(formattedDresses)
     } catch (err) {
-        res.status(500).json({ message: 'Xəta baş verdi' })
+        res.status(500).json({ message: 'Xəta baş verdi', error: err.message })
     }
 }
+
+module.exports = { getAllDresses }
 
 const createDress = async (req, res) => {
     try {
